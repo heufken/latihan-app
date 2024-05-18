@@ -1,2 +1,3 @@
+<!--hello.blade.php-->
 <h2>Selamat Datang</h2>
-<p>Laravel Framework</p>
+<b>Semoga sukses dan lancar belajar Framework Laravel 10.x</b>

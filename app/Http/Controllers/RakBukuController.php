@@ -1,14 +1,14 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\RakBuku;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RakBukuController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     private function pre($arr = [])
     {
         echo '<pre>';
@@ -16,12 +16,16 @@ class RakBukuController extends Controller
         echo '</pre>';
     }
 
-    public function index(Request $request)
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
         $rak = RakBuku::all();
-        $this->pre($request->session()->all());
         return view('rak_buku.index', ['rak' => $rak]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -32,6 +36,7 @@ class RakBukuController extends Controller
         $data['action'] = url('rak_buku');
         return view('rak_buku.form', $data);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -41,12 +46,36 @@ class RakBukuController extends Controller
         $rak->nama = $request->input('nama');
         $rak->lokasi = $request->input('lokasi');
         $rak->keterangan = $request->input('keterangan');
-        $request->session()->put('rak', $rak);
-        $rak->save();
-        $request->session()->flash('pesan', 'Data telah berhasil tersimpan.');
+        $rm = $this->rules_messages();
+        $validator = Validator::make($request->all(), $rm['rules'], $messages = $rm['messages']);
+        if ($validator->fails()) {
+            return redirect('/rak_buku/create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $validated = $validator->validate();
+        if ($validated) {
+            $rak->save();
+        }
         return redirect('/rak_buku');
     }
 
+    private function rules_messages()
+    {
+        $rules = [
+            'nama' => 'required |max:50',
+            'lokasi' => 'required | max:5'
+        ];
+        $messages = [
+            'required' => 'Kolom ini harus diisi.',
+            'max' => 'Karakter yang diisi melebihi ketentuan.'
+        ];
+        $data = [
+            'rules' => $rules,
+            'messages' => $messages
+        ];
+        return $data;
+    }
     /**
      * Display the specified resource.
      */
@@ -54,6 +83,7 @@ class RakBukuController extends Controller
     {
         return view('rak_buku.destroy', ['rak' => $rakBuku]);
     }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -64,6 +94,7 @@ class RakBukuController extends Controller
         $data['action'] = url('rak_buku' . '/' . $rakBuku->id);
         return view('rak_buku.form', $data);
     }
+
     /**
      * Update the specified resource in storage.
      */
@@ -72,18 +103,36 @@ class RakBukuController extends Controller
         $rakBuku->nama = $request->input('nama');
         $rakBuku->lokasi = $request->input('lokasi');
         $rakBuku->keterangan = $request->input('keterangan');
-        $rakBuku->save();
-        $request->session()->flash('pesan', 'Data telah berhasil diubah.');
+        $rm = $this->rules_messages();
+        $validator = Validator::make($request->all(), $rm['rules'], $messages = $rm['messages']);
+        if ($validator->fails()) {
+            return redirect('/rak_buku/' . $rakBuku->id . '/edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $validated = $validator->validate();
+        if ($validated) {
+            $rakBuku->save();
+        }
         return redirect('/rak_buku');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, RakBuku $rakBuku)
+    public function destroy(RakBuku $rakBuku)
     {
         $rakBuku->delete();
-        $request->session()->flash('pesan', 'Data telah berhasil dihapus.');
         return redirect('/rak_buku');
+    }
+
+    public function store_ajax(Request $request)
+    {
+        $rak = new RakBuku();
+        $rak->nama = $request->input('nama');
+        $rak->lokasi = $request->input('lokasi');
+        $rak->keterangan = $request->input('keterangan');
+        $json = Response::json_encode($rak);
+        return $json;
     }
 }
