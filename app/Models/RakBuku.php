@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RakBuku extends Model
 {
+    // use HasFactory;
     protected $table = 'rak_buku';
-    public function buku(): HasMany{
+    public function buku(): HasMany
+    {
         return $this->hasMany(Buku::class, 'id_rak_buku', 'id');
     }
 }
