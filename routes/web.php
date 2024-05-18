@@ -5,20 +5,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-// Route::get('/hello', function () {
-//     return view('hello');
-// });
-Route::view('/hello', 'hello');
-
-Route::get('/coba/{id}', function (string $id) {
-    return view('coba', ['id' => $id]);
+Route::get('/buku', function () {
+    
+    $data = [];
+    $data['poin'] = 83;
+    $data['flag'] = '2';
+    $data['sub_judul']= 'latihan parsing data di view';
+    $data['buku'] = ['buku 1', 'buku 2', 'buku 3', 'buku 4', 'buku 5'];
+    return view('buku/list', $data);
 });
 
 Route::view('/biodata', 'biodata');
-
-Route::post('/biodata', function (Request $request) {
-    $output = "nama: . $request->nama. <br>
-    Email: . $request->email. <br>
-    No. HP: $request->no_hp.";
-    return $output;
-});

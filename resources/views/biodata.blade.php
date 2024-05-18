@@ -1,4 +1,13 @@
+@extends('layouts.app')
 <h2>Tambahkan Biodata Anda</h2>
+@section('title', 'Biodata Karyawan')
+
+@section('sidebar')
+@parent
+<p>Master Sidebar</p>
+@endsection
+
+@section('content')
 <table>
     <form method="post">
         <tr>
@@ -23,3 +32,4 @@
         </tr>
     </form>
 </table>
+@endsection
